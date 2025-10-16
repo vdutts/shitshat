@@ -11,7 +11,7 @@ def vote_button(post_id: str, direction: int, user_vote: int) -> rx.Component:
             tag=icon_name,
             class_name=rx.cond(
                 is_active,
-                f"{active_color} transition-colors duration-200",
+                active_color,
                 "text-gray-400 group-hover:text-gray-600 transition-colors duration-200",
             ),
         ),

@@ -2,6 +2,8 @@ import reflex as rx
 from app.states.yak_state import YakState
 from app.components.post_card import post_card
 from app.components.create_post_dialog import create_post_dialog
+from app.db.database import create_db_and_tables
+from app.pages.post_detail import post_detail
 
 
 def header() -> rx.Component:
@@ -56,8 +58,7 @@ def index() -> rx.Component:
         rx.el.div(
             rx.el.div(sort_tabs(), class_name="flex justify-center mb-6"),
             rx.el.div(
-                rx.foreach(YakState.sorted_posts, post_card),
-                class_name="flex flex-col gap-4",
+                rx.foreach(YakState.posts, post_card), class_name="flex flex-col gap-4"
             ),
             class_name="container mx-auto max-w-2xl px-4 py-8",
         ),
@@ -66,7 +67,11 @@ def index() -> rx.Component:
     )
 
 
-from app.pages.post_detail import post_detail
+@rx.event
+def on_load_and_create_db():
+    create_db_and_tables()
+    return [YakState.load_posts, YakState.clear_post_detail]
+
 
 app = rx.App(
     theme=rx.theme(appearance="light"),
@@ -79,5 +84,5 @@ app = rx.App(
         ),
     ],
 )
-app.add_page(index, route="/", on_load=YakState.clear_post_detail)
+app.add_page(index, route="/", on_load=on_load_and_create_db)
 app.add_page(post_detail, route="/post/[post_id]", on_load=YakState.get_post_by_id)
